@@ -1,0 +1,397 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - MVC</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/MVC.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">MVC</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2024 - MVC - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+
+@* dotnet aspnet-codegenerator controller -name SinhvienController -m Sinhvien -dc MVC.Data.ApplicationDbContext --relativeFolderPath Controllers --useDefaultLayout --referenceScriptLibraries --databaseProvider sqlite *@
+
+@* dotnet aspnet-codegenerator controller -name LophocController -m Lophoc -dc MVC.Data.ApplicationDbContext --relativeFolderPath Controllers --useDefaultLayout --referenceScriptLibraries --databaseProvider sqlite *@
+
+
+
+@* using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace MVC.Models
+{
+    [Table("Lophocs")]
+    public class Lophoc 
+    {
+        
+        [Key]
+        public string? MaLop { get; set; }
+
+        public int? Nhom { get; set; }
+
+        public double SoTT { get; set; }
+        public ICollection<Sinhvien>? Sinhvien {get; set;}
+
+        
+
+    }
+} *@
+
+@* using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+
+namespace MVC.Models
+
+{
+      [Table("Sinhviens")]
+    
+    public class Sinhvien
+    {
+           [Key]
+        public double Masinhvien { get; set; }
+        public string? Tensinhvien { get; set; }
+
+        public string MaLop { get; set; }
+        
+           [ForeignKey("MaLop")]  
+        public Lophoc? Lophoc {get;set;} 
+    }
+} *@
+
+
+@* namespace MVC.Models
+{
+    public class StringProcess_NDN492
+    {
+        public string LowerToUpper(string input)
+        {
+            return input.ToUpper();
+        }
+    }
+} *@
+
+@* namespace MVC.Controllers
+{
+    public class LophocController : Controller
+    {
+        private readonly ApplicationDbContext _context;
+        private readonly StringProcess_NDN492 _stringProcess;
+
+        public LophocController(ApplicationDbContext context)
+        {
+            _context = context;
+            _stringProcess = new StringProcess_NDN492();
+        }
+
+        // GET: Lophoc
+        public async Task<IActionResult> Index()
+        {
+            return View(await _context.Lophoc.ToListAsync());
+        }
+
+        // GET: Lophoc/Details/5
+        public async Task<IActionResult> Details(string id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var lophoc = await _context.Lophoc
+                .FirstOrDefaultAsync(m => m.MaLop == id);
+            if (lophoc == null)
+            {
+                return NotFound();
+            }
+
+            return View(lophoc);
+        }
+
+        // GET: Lophoc/Create
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        // POST: Lophoc/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("MaLop,Nhom,SoTT")] Lophoc lophoc)
+        {
+            if (ModelState.IsValid)
+            {
+                lophoc.MaLop = _stringProcess.LowerToUpper(lophoc.MaLop);
+                _context.Add(lophoc);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(lophoc);
+        }
+
+        // GET: Lophoc/Edit/5
+        public async Task<IActionResult> Edit(string id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var lophoc = await _context.Lophoc.FindAsync(id);
+            if (lophoc == null)
+            {
+                return NotFound();
+            }
+            return View(lophoc);
+        }
+
+        // POST: Lophoc/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(string id, [Bind("MaLop,Nhom,SoTT")] Lophoc lophoc)
+        {
+            if (id != lophoc.MaLop)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    lophoc.MaLop = _stringProcess.LowerToUpper(lophoc.MaLop);
+                    _context.Update(lophoc);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!LophocExists(lophoc.MaLop))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            return View(lophoc);
+        }
+
+        // GET: Lophoc/Delete/5
+        public async Task<IActionResult> Delete(string id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var lophoc = await _context.Lophoc
+                .FirstOrDefaultAsync(m => m.MaLop == id);
+            if (lophoc == null)
+            {
+                return NotFound();
+            }
+
+            return View(lophoc);
+        }
+
+        // POST: Lophoc/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(string id)
+        {
+            var lophoc = await _context.Lophoc.FindAsync(id);
+            if (lophoc != null)
+            {
+                _context.Lophoc.Remove(lophoc);
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        private bool LophocExists(string id)
+        {
+            return _context.Lophoc.Any(e => e.MaLop == id);
+        }
+    }
+} *@
+
+
+@* using System.Data;
+using OfficeOpenXml;
+namespace MVC.Models.Process
+{
+    public class ExcelProcess
+    {
+        public DataTable ExcelToDataTable(string strPath)
+        {
+            FileInfo fi = new FileInfo(strPath);
+            ExcelPackage excelPackage = new ExcelPackage(fi);
+            DataTable dt = new DataTable();
+            ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets[0];
+            //check if the worksheet is completely empty
+            if (worksheet.Dimension == null)
+            {
+                return dt;
+            }
+            //create a list to hold the column names
+            List<string> columnNames = new List<string>();
+            //needed to keep track of empty column headers
+            int currentColumn = 1;
+            //loop all columns in the sheet and add them to the datatable
+            foreach (var cell in worksheet.Cells[1, 1, 1, worksheet.Dimension.End.Column])
+            {
+                string columnName = cell.Text.Trim();
+                //check if the previous header was empty and add it if it was
+                if (cell.Start.Column != currentColumn)
+                {
+                    columnNames.Add("Header_" + currentColumn);
+                    dt.Columns.Add("Header_" + currentColumn);
+                    currentColumn++;
+                }
+                //add the column name to the list to count the duplicates
+                columnNames.Add(columnName);
+                //count the duplicate column names and make them unique to avoid the exception
+                //A column named 'Name' already belongs to this DataTable
+                int occurrences = columnNames.Count(x => x.Equals(columnName));
+                if (occurrences > 1)
+                {
+                    columnName = columnName + "_" + occurrences;
+                }
+                //add the column to the datatable
+                dt.Columns.Add(columnName);
+                currentColumn++;
+            }
+
+            //start adding the contents of the excel file to the datatable
+            for (int i = 2; i <= worksheet.Dimension.End.Row; i++)
+            {
+                var row = worksheet.Cells[i, 1, i, worksheet.Dimension.End.Column];
+                DataRow newRow = dt.NewRow();
+                //loop all cells in the row
+                foreach (var cell in row)
+                {
+                    newRow[cell.Start.Column - 1] = cell.Text;
+                }
+                dt.Rows.Add(newRow);
+            }
+            return dt;
+        }
+    }
+}
+ *@
+
+
+ @* public async Task<IActionResult> Upload()
+        {
+            return View();
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult>Upload(IFormFile file)
+        {
+            if (file!=null)
+            {
+                string fileExtension = Path.GetExtension(file.FileName);
+                if (fileExtension != ".xls" && fileExtension != ".xlsx")
+                {
+                    ModelState.AddModelError("", "Please choose excel file to upload!");
+                }
+                else
+                {
+                    //rename file when  upload to server
+                    var fileName = DateTime.Now.ToShortTimeString() + fileExtension;
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory() + "/Uploads/Excels", fileName);
+                    var fileLocation = new  FileInfo(filePath).ToString();
+                    using (var stream = new  FileStream(filePath, FileMode.Create))
+                    {
+                        //save  file to server
+                        await file.CopyToAsync(stream);
+                        //read data from excel file fill DataTable
+                        var dt = _excelProcess.ExcelToDataTable(fileLocation);
+                        //using for loop to read data from dt
+                        for (int i = 0; i < dt.Rows.Count; i++)
+                        {
+                            //creat new Person object
+                            var ps = new Person();
+                            //set value to attributes
+                            ps.PersonId = dt.Rows[i] [0].ToString();
+                            ps.FullName = dt.Rows[i] [1].ToString();
+                            ps.Address = dt.Rows[i] [2].ToString();
+                            //add object to context
+                            _context.Add(ps);
+                        }
+                        await _context.SaveChangesAsync();
+                        return RedirectToAction(nameof(Index));
+                    }
+                }
+            
+            }
+            return View();
+        }
+        public IActionResult Download()
+         {
+            //Name the file when downloading
+            var fileName = "BTPTPMQL" + ".xlsx";
+            using(ExcelPackage excelPackage = new ExcelPackage ())
+            {
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.Add("sheet 1");
+                //add some text to cell A1
+                worksheet.Cells["A1"].Value = "PersonId";
+                worksheet.Cells["B1"].Value = "FullName";
+                worksheet.Cells["C1"].Value = "Address";
+                //get all Person
+                var personList = _context.Person.ToList();
+                //fill data to worksheet
+                worksheet.Cells["A2"].LoadFromCollection(personList);
+                var stream = new MemoryStream(excelPackage.GetAsByteArray());
+                //dowload file
+                return File(stream, "application/vnd.openxmlformats-officedocument.spreatsheetml.sheet", fileName);
+            }
+         } *@
